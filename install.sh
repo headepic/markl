@@ -22,6 +22,33 @@ for dir in "$WAZA_DIR"/skills/*/; do
   printf "  /%-10s %s\n" "$name" "$desc"
 done
 
+# Auto-evolution hook: PostToolUse logger for markl skills.
+SETTINGS="$HOME/.claude/settings.json"
+HOOK_CMD="$WAZA_DIR/hooks/log-skill-usage.sh"
+chmod +x "$HOOK_CMD" 2>/dev/null || true
+
+if [ -f "$SETTINGS" ] && command -v jq >/dev/null 2>&1; then
+  if jq -e --arg cmd "$HOOK_CMD" \
+      '(.hooks.PostToolUse // []) | map(.hooks[]?.command) | flatten | index($cmd)' \
+      "$SETTINGS" >/dev/null; then
+    echo "Auto-evolve hook already present in $SETTINGS."
+  else
+    tmp=$(mktemp)
+    jq --arg cmd "$HOOK_CMD" '
+      .hooks = (.hooks // {}) |
+      .hooks.PostToolUse = (.hooks.PostToolUse // []) |
+      .hooks.PostToolUse += [{
+        matcher: "Skill",
+        hooks: [{type: "command", command: $cmd}]
+      }]
+    ' "$SETTINGS" > "$tmp" && mv "$tmp" "$SETTINGS"
+    echo "Auto-evolve hook installed in $SETTINGS."
+  fi
+else
+  echo "Skipped hook install (no $SETTINGS or jq missing). Add manually:"
+  echo "  PostToolUse matcher=Skill -> $HOOK_CMD"
+fi
+
 # English coaching prompt
 CLAUDE_MD="$HOME/.claude/CLAUDE.md"
 MARKER="## English Coaching"
