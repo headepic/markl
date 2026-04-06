@@ -6,7 +6,7 @@
 set -e
 
 LOG="${MARKL_USAGE_LOG:-$HOME/.claude/markl-usage.jsonl}"
-MARKL_SKILLS="check design evolve health hunt learn read think write"
+MARKL_SKILLS="check design evolve-markl health hunt learn read think write"
 
 # Hook payload arrives on stdin as JSON.
 payload=$(cat)
