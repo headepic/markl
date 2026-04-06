@@ -1,5 +1,5 @@
 ---
-name: evolve
+name: evolve-markl
 description: Use when the user wants to review markl skill usage, analyze friction, and propose improvements to SKILL.md files. Not for writing new skills from scratch.
 version: 0.1.0
 allowed-tools:
@@ -11,7 +11,7 @@ allowed-tools:
   - AskUserQuestion
 ---
 
-# /evolve — markl auto-evolution
+# /evolve-markl — markl auto-evolution
 
 Review how markl's skills are actually being used, identify friction, and
 propose concrete edits to the relevant `SKILL.md` files. Changes are always
@@ -31,7 +31,7 @@ manually by reading the session transcripts referenced by `session_id`.
 
 ## Workflow
 
-When invoked as `/evolve` (all skills) or `/evolve <skill-name>` (one skill):
+When invoked as `/evolve-markl` (all skills) or `/evolve-markl <skill-name>` (one skill):
 
 ### 1. Summarize usage
 - Read `~/.claude/markl-usage.jsonl` (create if missing, report and exit).
@@ -70,7 +70,7 @@ After user confirms:
 - `git -C /Users/jowang/Documents/github/markl add -A`
 - Commit with a message like:
   `evolve: <skill> — <one-line summary of change> (N sessions analyzed)`
-- The commit acts as the watermark for the next `/evolve` run — only sessions
+- The commit acts as the watermark for the next `/evolve-markl` run — only sessions
   logged *after* `HEAD`'s commit timestamp are considered "new" next time.
 
 ### 6. Report
@@ -84,7 +84,7 @@ Print:
 - **Never edit a skill without showing the diff first.** User always confirms.
 - **Never mass-rewrite** — if a skill needs >30 lines changed, stop and ask
   the user whether to rewrite instead of evolving.
-- **Do not touch `evolve/SKILL.md` itself** unless the user explicitly asks.
+- **Do not touch `evolve-markl/SKILL.md` itself** unless the user explicitly asks.
   Self-modification needs human review.
 - **Do not invent evidence.** Every proposed edit must cite at least one
   real `session_id` from the log. If there's no evidence, say so and skip.
