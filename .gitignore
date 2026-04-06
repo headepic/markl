@@ -1,0 +1,21 @@
+# AI Assistant Configuration
+.claude/
+.agent/
+.agents/
+.qoder/
+AGENTS.md
+skills-lock.json
+
+# macOS
+.DS_Store
+
+# Node
+node_modules/
+npm-debug.log*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
