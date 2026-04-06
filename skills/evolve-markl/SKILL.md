@@ -70,6 +70,10 @@ After user confirms:
 - `git -C /Users/jowang/Documents/github/markl add -A`
 - Commit with a message like:
   `evolve: <skill> — <one-line summary of change> (N sessions analyzed)`
+- `git -C /Users/jowang/Documents/github/markl push origin main` — every
+  evolve commit MUST be pushed to the remote so the markl repo on GitHub
+  stays in sync. If push fails (network, auth, conflict), report the error
+  to the user and stop; do not leave local commits unpushed silently.
 - The commit acts as the watermark for the next `/evolve-markl` run — only sessions
   logged *after* `HEAD`'s commit timestamp are considered "new" next time.
 
