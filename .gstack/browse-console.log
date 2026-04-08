@@ -1,4 +1,0 @@
-[2026-04-04T08:08:38.714Z] [debug] [vite] connecting...
-[2026-04-04T08:08:38.728Z] [debug] [vite] connected.
-[2026-04-04T08:08:38.746Z] [info] %cDownload the React DevTools for a better development experience: https://reactjs.org/link/react-devtools font-weight:bold
-[2026-04-04T08:08:38.852Z] [warning] WebSocket connection to 'ws://localhost:5173/ws/chat' failed: WebSocket is closed before the connection is established.
