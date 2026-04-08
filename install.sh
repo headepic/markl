@@ -27,6 +27,16 @@ SETTINGS="$HOME/.claude/settings.json"
 HOOK_CMD="$MARKL_DIR/hooks/log-skill-usage.sh"
 chmod +x "$HOOK_CMD" 2>/dev/null || true
 
+if ! command -v jq >/dev/null 2>&1; then
+  echo "Warning: jq not found. Install it with: brew install jq"
+  echo "Skipping hook auto-install. Add manually:"
+  echo "  PostToolUse matcher=Skill           -> $HOOK_CMD"
+  echo "  PostToolUse matcher=Write|Edit|Read -> $HOOK_CMD"
+elif [ ! -f "$SETTINGS" ]; then
+  echo "Skipped hook install (no $SETTINGS found). Add manually:"
+  echo "  PostToolUse matcher=Skill           -> $HOOK_CMD"
+  echo "  PostToolUse matcher=Write|Edit|Read -> $HOOK_CMD"
+fi
 if [ -f "$SETTINGS" ] && command -v jq >/dev/null 2>&1; then
   tmp=$(mktemp)
   jq --arg cmd "$HOOK_CMD" '
@@ -55,6 +65,8 @@ MARKER="## English Coaching"
 echo ""
 if grep -q "$MARKER" "$CLAUDE_MD" 2>/dev/null; then
   echo "English coaching already enabled in $CLAUDE_MD. Skipping."
+elif [ ! -t 0 ]; then
+  echo "Skipping English coaching prompt (non-interactive shell). Run install.sh manually to enable."
 else
   printf "Add passive English coaching to %s? [y/N] " "$CLAUDE_MD"
   read -r REPLY
