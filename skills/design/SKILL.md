@@ -75,6 +75,40 @@ Real failures from prior sessions, in order of frequency:
 - **Picked colors that don't commit.** A muted blue-gray that "goes with everything" goes with nothing. Dominant color plus one sharp accent. Commit.
 - **Layout jittered on state transitions.** Switching between idle/connecting/active shifted the UI because element sizes changed per state. All states must occupy the same layout footprint; use fixed dimensions or `min-height`.
 
+## Artifact (when invoked under auto-harness)
+
+When `design` runs as Stage B of `auto-harness` (shape: ui), it owns the artifact for the UI work. After answering the four locking questions and naming the aesthetic direction, but before writing the first component, write a lightweight artifact at `<repo-root>/.markl/<short-slug>.md`:
+
+```markdown
+# <ui task>
+
+## Goal
+<one sentence: what this UI lets the user do or feel>
+
+## Decisions
+- Audience and context: <answer to Q1>
+- Aesthetic direction: <named in one phrase, the answer to Q2>
+- Memorable element: <answer to Q3>
+- Hard constraints: <framework, bundle, contrast, a11y, the answer to Q4>
+- Typeface: <display + text, with anchors to where they are loaded, e.g. `app/layout.tsx:12`>
+- CSS strategy: <single strategy chosen, anchor to where tokens live>
+
+## Acceptance Criteria
+- [ ] Removing the chosen memorable element changes how the page feels (it is load-bearing, not decoration)
+- [ ] Mobile constraint is honored under the named direction (state which wins if they conflict)
+- [ ] Contrast ratios pass WCAG AA on every text-on-background pair
+- [ ] <one behavioral-negative criterion, e.g. "Layout does NOT reflow when switching between idle and active states">
+
+## Known Unknowns
+- <if any: real content not yet provided, image assets pending, etc.>
+
+## Reframings
+```
+
+When `design` is invoked directly (not via harness), the artifact is optional. Skip it for one-off components. Write it for any work that touches more than one screen, since `check`'s subagent uses it to score the UI rubric.
+
+The `log-skill-usage.sh` hook detects the `Write` to `.markl/*.md` and emits `artifact_written` automatically.
+
 ## Handoff
 
 End with:

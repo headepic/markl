@@ -1,6 +1,6 @@
-# Waza
+# markl
 
-Personal skill collection for Claude Code. Nine skills covering the complete engineering workflow: think, design, check, hunt, write, learn, read, english, health.
+Personal skill collection for Claude Code. Ten skills covering the complete engineering workflow: auto-harness, think, hunt, design, check, learn, read, write, health, evolve-skills.
 
 ## Communication
 
@@ -11,22 +11,26 @@ Personal skill collection for Claude Code. Nine skills covering the complete eng
 
 ```
 skills/
-├── check/        -- code review before merging
-├── design/       -- production-grade frontend UI
-├── health/       -- Claude Code config audit
-│   └── agents/   -- agent1-context.md, agent2-control.md
-├── hunt/         -- systematic debugging
-├── learn/        -- research to published output
-├── read/         -- fetch URL or PDF as Markdown
-├── think/        -- design and validate before building
-└── write/        -- natural prose in Chinese and English
-    └── references/  -- write-zh.md, write-en.md
+├── auto-harness/   -- end-to-end orchestrator: classify, understand, gate, build, verify, ship
+├── check/          -- code review before merging, with independent subagent + dry-run rubric mode
+├── design/         -- production-grade frontend UI with a committed visual direction
+├── evolve-skills/  -- analyze hook log + transcripts, propose SKILL.md edits
+├── health/         -- Claude Code config audit
+│   └── agents/     -- agent1-context.md, agent2-control.md
+├── hunt/           -- systematic debugging, root cause before fix
+├── learn/          -- six-stage research to published output
+├── read/           -- fetch URL or PDF as Markdown
+├── think/          -- design and validate before building, owns .markl/<task>.md artifact
+└── write/          -- natural prose in Chinese and English
+    └── references/ -- write-zh.md, write-en.md
 .claude-plugin/
 └── marketplace.json  -- plugin registry for npx distribution
-install.sh            -- symlink installer
+hooks/
+└── log-skill-usage.sh  -- PostToolUse telemetry: skill invocations + .markl/ artifact events
+install.sh              -- symlink installer
 ```
 
-Each skill has a `SKILL.md` (loaded on demand) and a `README.md` (quick reference for humans).
+Each skill has a `SKILL.md` (loaded on demand). The orchestrator (`auto-harness`) and the artifact-aware skills (`think`, `hunt`, `design`, `check`) communicate via `<repo-root>/.markl/<task>.md`, not via conversation context.
 
 ## Verification
 
@@ -34,21 +38,18 @@ Each skill has a `SKILL.md` (loaded on demand) and a `README.md` (quick referenc
 # All SKILL.md files have valid frontmatter
 for f in skills/*/SKILL.md; do head -5 "$f" | grep -q "^name:" && echo "ok: $f" || echo "MISSING name: $f"; done
 
-# Version consistency: SKILL.md must match marketplace.json
-for skill in check design english health hunt learn read think write; do
-  skill_ver=$(grep "^version:" "skills/$skill/SKILL.md" | awk '{print $2}')
-  market_ver=$(python3 -c "import json; d=json.load(open('.claude-plugin/marketplace.json')); print([p['version'] for p in d['plugins'] if p['name']=='$skill'][0])")
-  [ "$skill_ver" = "$market_ver" ] && echo "ok: $skill $skill_ver" || echo "MISMATCH: $skill SKILL=$skill_ver MARKET=$market_ver"
+# Frontmatter name matches directory name
+for d in skills/*/; do
+  name=$(basename "$d")
+  declared=$(grep '^name:' "$d/SKILL.md" | awk '{print $2}')
+  [ "$name" = "$declared" ] && echo "ok: $name" || echo "MISMATCH: dir=$name name=$declared"
 done
 
-# Reference files exist for skills that use them
-test -f skills/english/references/english-phrases.md && \
-test -f skills/design/references/design-reference.md && \
-test -f skills/read/references/read-methods.md && \
-test -f skills/write/references/write-zh.md && \
-test -f skills/write/references/write-en.md && \
-test -f skills/health/agents/agent1-context.md && \
-test -f skills/health/agents/agent2-control.md && echo "references: ok"
+# No em dashes anywhere
+! grep -l '—' skills/*/SKILL.md hooks/*.sh README.md CLAUDE.md 2>/dev/null && echo "em dashes: clean"
+
+# Hook script syntax
+bash -n hooks/log-skill-usage.sh && echo "hook: ok"
 
 # marketplace.json is valid JSON
 python3 -c "import json; json.load(open('.claude-plugin/marketplace.json'))" && echo "marketplace.json: ok"
@@ -56,13 +57,12 @@ python3 -c "import json; json.load(open('.claude-plugin/marketplace.json'))" && 
 
 ## Commit Convention
 
-`{type}: {description}` -- types: feat, fix, refactor, docs, chore
+`{type}: {description}` where type is one of: feat, fix, refactor, docs, chore.
 
-## Release Convention (tw93/miaoyan style)
+`evolve-skills` uses its own prefix: `evolve: <skill>, <one-line summary> (N sessions analyzed)`. These commits act as the watermark for the next evolve run.
 
-- Title: `V{version} {Codename} {emoji}` -- e.g., V1.3.0 Guardian
-- Tag: `v{version}` (lowercase v)
-- Body: HTML format, bilingual (English Changelog + 中文更新日志), one-to-one
-- Each item: `<li><strong>Category</strong>: description.</li>` -- bold label summarizes the change, description is one concise sentence, no filler words
-- Style: engineer-facing, no marketing language; lead with what changed, not why it matters
-- Footer: update command `npx skills add tw93/Waza@latest` + star + repo link
+## Artifact Convention
+
+Skills that participate in the harness flow read and write artifacts at `<repo-root>/.markl/<slug>.md`. Live artifacts sit at the top level of `.markl/`; shipped artifacts move to `.markl/done/`. The PostToolUse hook in `hooks/log-skill-usage.sh` automatically logs every Read, Write, and Edit on these paths to `~/.claude/markl-usage.jsonl`. Skills must not append telemetry manually except for the one legacy case in `check` (artifact_missing).
+
+`.markl/` should be in every consuming project's `.gitignore`. `think` adds it idempotently before the first artifact write.

@@ -122,6 +122,37 @@ Real failures from prior sessions, in order of frequency:
 - **Blind restart loop.** Restarted the server 8 times, changing one variable each time without reading the actual error response body. Read the last error verbatim before restarting; never restart more than twice without a new evidence-based hypothesis.
 - **Pipeline healthy but no output.** Orchestrator reported RUNNING, but TTS vendor was misconfigured. Polled status instead of testing each stage. In multi-stage pipelines (ASR->LLM->TTS), test each stage in isolation when the orchestrator says healthy but output is missing.
 
+## Artifact (when invoked under auto-harness)
+
+When `hunt` runs as Stage B of `auto-harness` (shape: bug), it owns the artifact for the bug fix the same way `think` owns it for features. After confirming the root cause and scoping the fix, but before applying any patch, write a lightweight artifact at `<repo-root>/.markl/<short-slug>.md`:
+
+```markdown
+# <one-line bug summary>
+
+## Goal
+Fix: <symptom in one sentence>
+
+## Decisions
+- Root cause: <what is wrong>, anchor: `path/to/file.ts:42`
+- Fix scope: <what changes>, anchor: `path/to/file.ts:42`
+
+## Acceptance Criteria
+- [ ] Regression test fails on the unfixed code and passes after the fix (file: `path/to/test`)
+- [ ] Original symptom does not recur under <reproduction condition>
+- [ ] <one behavioral-negative criterion, e.g. "Does NOT silently swallow the same error in adjacent call sites">
+
+## Known Unknowns
+- <if any>
+
+## Reframings
+```
+
+The bug artifact is lighter than a feature artifact, but the same rules apply: every Decision needs a `file:line` anchor, at least one AC must be behavioral-negative or describe a falsifying failure mode (not "the bug is fixed" or "test passes"), and the file is re-entered (Reframings appended) if the diagnosis shifts mid-fix.
+
+When `hunt` is invoked directly (not via harness), the artifact is optional. If the bug is small and you are confident in scope, skip it. If you find yourself reverting the same area twice or the fix is touching more than 3 files, write the artifact retroactively, it forces the discipline back.
+
+The `log-skill-usage.sh` hook detects the `Write` to `.markl/*.md` and emits `artifact_written` automatically. Do not append telemetry manually.
+
 ## Outcome
 
 End with a short summary:

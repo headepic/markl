@@ -24,7 +24,39 @@ hooks:
 
 Read the diff, find the problems, fix what can be fixed safely, ask about the rest. Do not claim done until verification has run in this session.
 
-## Get the Diff
+## Mode: AC dry-run (rubric gate)
+
+`check` has a second mode used by `auto-harness` between Stage B and Stage C: **AC dry-run**. Trigger when the user (or auto-harness) says `check --dry-run-rubric` or "check the artifact AC quality before I build". In dry-run mode:
+
+1. Locate the live artifact via Step 0a below.
+2. **Do not** get a diff. There is no diff yet.
+3. Spawn the review subagent with the artifact contents and these instructions only:
+   - "You are validating whether the Acceptance Criteria in the artifact below are gradable, not whether anything was built. For each AC, return one of: `gradable` (a future diff could clearly satisfy or violate it), `tautological` (matches the bad-AC list: 'compiles', 'renders', 'returns 200', 'feature works', etc.), `vague` (no concrete observable behavior), `untestable` (would need information not available at review time)."
+   - "Also check: does at least one AC describe a behavioral-negative or falsifying failure mode? If not, flag the artifact as `missing-negative`."
+   - "Output as a markdown table: `| # | criterion | verdict | suggestion |`. No other commentary."
+4. Main check parses the table. **Gate**: if any AC is `tautological` / `vague` / `untestable`, OR `missing-negative` is set, the artifact fails the rubric gate. Print the failing rows and tell the user (or auto-harness) to send the artifact back to `think` for re-entry. Do not proceed.
+5. If every AC is `gradable` and at least one is behavioral-negative, print `rubric: gradable, ready for build` and exit.
+
+Dry-run mode is cheap (no diff, no UI rubric, one short subagent call) and catches the most common failure mode of the artifact convention: ACs that look fine to the writer but are not actually gradable. Skipping the gate means a wasted build cycle to discover the same thing later.
+
+## Step 0: Locate artifact, get diff, spawn subagent
+
+`check` does not review the diff in its own context. It hands the artifact and diff to a fresh subagent so the reviewer is independent of whoever generated the work. **The subagent returns findings. You, main check, decide.** Never rubber-stamp a subagent "LGTM."
+
+### 0a. Locate the live artifact
+
+At repo root, enumerate live artifacts only. Live means top level of `.markl/`; never recurse into `.markl/done/` (those are shipped, not under review):
+
+```bash
+ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+find "$ROOT/.markl" -maxdepth 1 -name '*.md' -type f 2>/dev/null
+```
+
+- Exactly one match: that is the artifact.
+- Multiple matches: ask the user which task this `check` is for.
+- Zero matches: proceed in **legacy mode** and mark `artifact: missing` in Sign-off. The review will be vibes-based and you should say so explicitly to the user.
+
+### 0b. Get the diff
 
 ```bash
 git fetch origin
@@ -32,6 +64,57 @@ git diff origin/main
 ```
 
 If the base branch is not `main`, ask before running. Already on the base branch? Stop and ask which commits to review.
+
+### 0c. Spawn the review subagent
+
+Use the `Agent` tool, `general-purpose`. Build a self-contained prompt containing:
+
+1. **Full contents of the artifact file** pasted inline (not the path).
+2. **Full diff** pasted inline.
+3. **Hard stops and Soft signals categories** from this skill pasted inline so the subagent uses the same vocabulary.
+4. **If the diff touches UI files** (`.tsx`, `.jsx`, `.vue`, `.svelte`, `.css`, `.html`, or anything under `components/` or `pages/`), paste this rubric and ask the subagent to score 1 to 3 on each with a one-line justification:
+   - **design quality**: commits to a visual direction or defaults to template?
+   - **originality**: would a default prompt have generated the same thing?
+   - **craft**: typography, spacing, color tokens, state transitions
+   - **functionality**: accessibility, responsive behavior, keyboard, contrast
+5. **Output contract** the subagent must follow exactly:
+
+   ```markdown
+   ## AC Verdict
+   | # | criterion | status | citation |
+   |---|-----------|--------|----------|
+   | 1 | <quoted from artifact> | satisfied / violated / silent | <file:line or "no diff coverage"> |
+
+   ## Hard Stops
+   - <category>: <one line>, <file:line>
+   (or "none")
+
+   ## Soft Signals
+   - <one line>, <file:line>
+   (or "none")
+
+   ## UI Rubric (only if UI files present)
+   | dimension | score | note |
+   |-----------|-------|------|
+   | design quality | 1-3 | ... |
+   ```
+
+6. **Forbidden in the subagent's output**: any verdict, any merge/no-merge recommendation, any code fix. Findings only. Main check decides.
+7. **Forbidden tool calls in the subagent**: `Write`, `Edit`, `NotebookEdit`. The subagent must not modify any file, especially not under `.markl/`, since the hook would record phantom `artifact_written` events and pollute evolve-skills' health metrics. State this constraint in the prompt explicitly.
+
+### 0d. Synthesize
+
+Parse the subagent's table directly. Count `satisfied`, `violated`, `silent` rows for the Sign-off block. Cross-check against the artifact's Reframings section: if the artifact was reframed mid-task, the subagent may be validating against ACs the user already retracted. Flag any such mismatch explicitly before proceeding.
+
+If the subagent's reasoning seems wrong (it happens), say so to the user and explain what you think instead. Do not silently override; show the disagreement.
+
+Telemetry for `artifact_read` is captured automatically by the `log-skill-usage.sh` PostToolUse hook the moment you `Read` the artifact file. Same hook captures `artifact_written`, `artifact_shipped`. The only manual telemetry call in `check` is for the legacy `artifact: missing` case, since no Read fires:
+
+```bash
+printf '{"ts":"%s","skill":"check","event":"artifact_missing","cwd":"%s"}\n' \
+  "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$(pwd)" \
+  >> ~/.claude/markl-usage.jsonl
+```
 
 ## Did We Build What Was Asked?
 
@@ -125,7 +208,7 @@ For every new code path: trace it, check if a test covers it. If this change fix
 After all fixes are applied, run `scripts/verify.sh` from this skill's directory, or the project's known verification command:
 
 ```bash
-bash "$(dirname "$0")/../scripts/verify.sh"
+bash "${CLAUDE_SKILL_DIR}/scripts/verify.sh"
 ```
 
 If nothing is detected, ask the user for the verification command before proceeding.
@@ -161,6 +244,8 @@ Real failures from prior sessions, in order of frequency:
 ```
 files changed:    N (+X -Y)
 scope:            on target / drift: [what]
+artifact:         .markl/<slug>.md (read) / missing (legacy mode)
+ACs:              N satisfied / N violated / N silent
 hard stops:       N found, N fixed, N deferred
 signals:          N noted
 new tests:        N

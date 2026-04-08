@@ -105,11 +105,82 @@ For each issue found in Phase 3:
 - Fix size: small, medium, large
 - Risk if ignored: low, medium, high
 
-**Approved design summary:**
-- **Building**: what this is (1 paragraph)
-- **Not building**: explicit out-of-scope list
-- **Approach**: chosen option with rationale
-- **Key decisions**: 3-5 with reasoning
-- **Unknowns**: anything needing resolution during implementation
-
 Close with one-line status per architecture section: clear, flagged, or skipped with reason.
+
+## Artifact: `.markl/<task>.md`
+
+Once the design is approved, write it to a file before any implementation begins. This artifact is the load-bearing handoff to `check` and any other downstream skill or fresh session. It is not a summary you also keep in your head, it is the source of truth.
+
+**Where**: at the repo root, resolved via `git rev-parse --show-toplevel`. Fall back to `pwd` for non-git projects and tell the user.
+
+**Always run this once before the first artifact write in any repo**, to keep scratchpads out of version control:
+
+```bash
+ROOT=$(git rev-parse --show-toplevel 2>/dev/null) || ROOT=$(pwd)
+mkdir -p "$ROOT/.markl/done"
+grep -qxF '.markl/' "$ROOT/.gitignore" 2>/dev/null || echo '.markl/' >> "$ROOT/.gitignore"
+```
+
+This is idempotent, safe to run every time. Do not skip it on the assumption "the user already added it", verify mechanically.
+
+**Filename**: `.markl/<short-slug>.md`. Slug from the task in 2-4 words, kebab-case. Never write to `.markl/done/`, that subdirectory is reserved for shipped artifacts moved by `auto-harness` after `check` passes.
+
+**Required sections** (in order, no placeholders, no TBDs):
+
+```markdown
+# <task title>
+
+## Goal
+<one sentence: the outcome the user actually wants>
+
+## Decisions
+- <decision>, anchor: `path/to/file.ts:42`
+- <decision>, anchor: `path/to/other.ts:108`
+(every decision must cite a file:line from Phase 1 exploration; no anchors means you did not actually explore)
+
+## Acceptance Criteria
+- [ ] <criterion>
+- [ ] <criterion>
+(at least ONE must be behavioral-negative, see rules below)
+
+## Known Unknowns
+- <thing that may need resolution during implementation>
+
+## Reframings
+<empty at first; appended to on re-entry, see below>
+```
+
+### Acceptance Criteria rules
+
+ACs are what `check` will tick. Trivial ACs produce green ticks on hollow work, so:
+
+- **At least one criterion must be behavioral-negative or describe a falsifying failure mode.** Examples:
+  - "Does NOT refetch user data when only `theme` prop changes"
+  - "Returns 409, not 500, when the same idempotency key is reused with a different body"
+  - "Cancelling mid-upload leaves no partial file on disk"
+- **Forbidden tautologies** (do not write these, they are not ACs):
+  - "Code compiles" / "Tests pass" / "No type errors"
+  - "Component renders" / "Page loads"
+  - "Endpoint returns 200" / "Function returns a value"
+  - "Feature works" / "Implements the design"
+- If you cannot write a behavioral-negative criterion, you do not understand the change well enough yet. Go back to Phase 1.
+
+### Re-entry on reframing
+
+`think` is **re-runnable mid-task**. When the user changes direction, contradicts an earlier decision, or reframes the goal:
+
+1. Re-read the existing artifact.
+2. Append a new dated entry under `## Reframings`:
+   ```
+   ### 2026-04-08, <one line summary>
+   <what changed, what decisions/ACs are now stale, what replaces them>
+   ```
+3. Update or strike through stale items in `## Decisions` and `## Acceptance Criteria` so the artifact reflects current truth, not history.
+
+Do not start a new file for the same task. Do not silently revise the original sections without leaving a Reframings entry, `check` needs to see what shifted.
+
+The artifact is only useful if it is current. A stale artifact is worse than no artifact, because the downstream subagent will confidently validate the wrong thing.
+
+### Telemetry
+
+Telemetry is mechanical, not reflective. The `log-skill-usage.sh` PostToolUse hook detects every `Write`/`Edit` to `.markl/*.md` and emits an `artifact_written` event automatically. Do not append manually, the hook owns this. If you need to verify it fired, check `~/.claude/markl-usage.jsonl` for the latest line.
