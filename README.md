@@ -5,7 +5,7 @@
 
 <br/>
 
-markl 把一名资深工程师在不同阶段的工作习惯,固化成 10 个可单独触发的 Claude Code 技能。每个技能针对一类具体任务,有明确的进入条件、产出物和退出条件。`auto-harness` 把它们串成一条端到端的工作流,从需求描述跑到代码交付。
+markl 把一名资深工程师在不同阶段的工作习惯,固化成 12 个可单独触发的 Claude Code 技能。每个技能针对一类具体任务,有明确的进入条件、产出物和退出条件。`auto-harness` 把它们串成一条端到端的工作流,从需求描述跑到代码交付。
 
 ## 技能列表
 
@@ -21,6 +21,8 @@ markl 把一名资深工程师在不同阶段的工作习惯,固化成 10 个可
 | [`/write`](skills/write/SKILL.md) | 把文字改写得在中英文里都自然顺畅。 |
 | [`/health`](skills/health/SKILL.md) | 审计 Claude Code 配置:CLAUDE.md、rules、skills、hooks、MCP 与行为偏差,按项目复杂度给出分级建议。 |
 | [`/evolve-skills`](skills/evolve-skills/SKILL.md) | 读 hook 日志和会话记录,定位每个技能的实际摩擦点,产出针对 SKILL.md 的具体 diff,被采纳后自动提交并推送。 |
+| [`/llm-wiki`](skills/llm-wiki/SKILL.md) | Karpathy 风格的 LLM Wiki:维护一个持续可查询、互相链接的 markdown 知识库,支持多 wiki 注册表。 |
+| [`/repo-analyzer`](skills/repo-analyzer/SKILL.md) | 生成结构化、有证据支撑的项目分析报告(Markdown 与 HTML 双格式)。 |
 
 每个技能是一个独立目录,包含 `SKILL.md`、引用文档和作用域限定的 hooks,通过 slash 命令按需加载。技能之间通过仓库根目录下的 `.markl/<task>.md` artifact 文件交接,而不是依赖对话上下文。
 
@@ -41,11 +43,26 @@ E.   交付      提交、推送、把 artifact 移到 .markl/done/
 
 ## 安装
 
+两种方式,任选其一。
+
+### 方式一:作为 Claude Code 插件安装(推荐)
+
+把这个仓库当作一个 marketplace,直接通过 `/plugin` 命令安装。所有技能、hook 都会被一起注册:
+
+```
+/plugin marketplace add headepic/markl
+/plugin install markl@markl
+```
+
+之后用 `/markl:think`、`/markl:hunt`、`/markl:check` 等带命名空间的形式调用。升级用 `/plugin marketplace update markl`。
+
+### 方式二:本地软链(传统方式)
+
 ```bash
 ./install.sh
 ```
 
-将每个技能软链到 `~/.claude/skills/`,需要 Claude Code 环境。
+将每个技能软链到 `~/.claude/skills/`,技能可以直接用 `/think`、`/hunt` 等不带命名空间的方式调用。同时把 PostToolUse hook 写入 `~/.claude/settings.json`,需要 Claude Code 环境与 `jq`。
 
 ## 进化机制
 

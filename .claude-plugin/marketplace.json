@@ -1,0 +1,25 @@
+{
+  "name": "markl",
+  "owner": {
+    "name": "headepic",
+    "url": "https://github.com/headepic/markl"
+  },
+  "metadata": {
+    "description": "Personal skill collection for Claude Code: 12 skills covering the engineering workflow.",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "markl",
+      "source": "./",
+      "description": "auto-harness orchestrator plus think, hunt, design, check, learn, read, write, health, evolve-skills, llm-wiki, repo-analyzer. Includes a PostToolUse hook that records skill invocations and .markl/ artifact events.",
+      "version": "1.0.0",
+      "category": "development",
+      "homepage": "https://github.com/headepic/markl",
+      "author": {
+        "name": "headepic"
+      },
+      "license": "MIT"
+    }
+  ]
+}
