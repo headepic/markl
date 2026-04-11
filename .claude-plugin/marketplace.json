@@ -1,7 +1,7 @@
 {
   "name": "markl",
   "owner": {
-    "name": "headepic",
+    "name": "howl",
     "url": "https://github.com/headepic/markl"
   },
   "metadata": {
@@ -17,7 +17,7 @@
       "category": "development",
       "homepage": "https://github.com/headepic/markl",
       "author": {
-        "name": "headepic"
+        "name": "howl"
       },
       "license": "MIT"
     }
