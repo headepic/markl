@@ -47,6 +47,27 @@ For each source: download it, convert to Markdown, clean, and file it into a str
 # For bulk work: automate with curl + r.jina.ai or a download script
 ```
 
+### Source Priority
+
+Primary sources over secondary. Multiple outlets citing the same wrong claim creates a circular illusion of truth.
+
+| Information type | Primary sources |
+|-----------------|----------------|
+| Technical principles | Original papers, official blog posts, author talks/interviews |
+| Engineering practice | GitHub source code, Release Notes, core maintainer posts |
+| Industry context | Original reporting from credible outlets (not reposts) |
+| Community signal | High-quality HN/Reddit/知乎 discussions, GitHub Issues |
+| Academic/research topics | arXiv papers (`curl -s "https://export.arxiv.org/api/query?search_query=all:keyword&max_results=10"`), conference proceedings |
+
+### Sufficiency Check
+
+Before moving to Phase 2, verify:
+- Can you tell the complete story of this domain? Any obvious gaps in the timeline?
+- Have you covered the major schools of thought or competing approaches?
+- Do key facts have at least two independent sources?
+
+If any answer is no, keep collecting. Do not move on with thin materials.
+
 The goal at the end of Phase 1: a local, organized repository of raw materials.
 
 For a blog post or article, 5-10 strong sources is usually enough. For a deep technical survey, 15-20. If you have been collecting for an hour and have not started reading, you are collecting to avoid the harder work. Stop and move to Phase 2.
@@ -61,7 +82,15 @@ Work through the materials yourself. For each piece:
 
 At the end of this phase, cut roughly half of what you collected. If you cannot decide what to cut, the material was not strong enough.
 
-For key concepts, try cutting across multiple angles: how did this idea evolve historically? What is the opposite claim? What does it look like in practice vs. in theory? What breaks if you remove it? This kind of multi-dimensional interrogation builds a real mental model, not just a definition.
+For key concepts, run through the five-question probe:
+
+1. **Where did it come from?** Trace the intellectual lineage — what problem was it responding to?
+2. **What problem does it solve?** Not what it is, but why it exists.
+3. **What breaks without it?** Counterfactual test — if you remove it, what falls apart?
+4. **What competes with it or coexists?** Horizontal position — alternatives, rivals, complements.
+5. **Where is it going?** Current trajectory, open problems, likely next moves.
+
+A concept you can answer all five for is a concept you actually understand. One you can only answer #2 for is a definition, not a mental model.
 
 For key claims and frameworks, apply three-layer verification before including them in your outline:
 
@@ -103,7 +132,20 @@ Now hand the draft to Claude with a specific brief:
 
 Work through the suggestions yourself. Accept, reject, or modify each one. Do not accept blindly. This phase often surfaces things you missed in Phase 2, which means more learning.
 
-Before accepting Claude's edits, run `/write` on the refined draft to strip any AI patterns that crept in during the refinement process.
+### AI-Flavor Kill List
+
+Scan the draft for these patterns and eliminate on sight:
+
+- **Transitional crutches**: "首先...其次...最后", "综上所述", "值得注意的是", "不难发现"
+- **Empty adjectives**: "赋能", "抓手", "打造闭环", "底层逻辑" (when used as filler)
+- **Textbook openings**: "在当今X快速发展的时代", "随着技术的不断进步"
+- **False-depth phrases**: "说白了", "本质上", "换句话说", "不可否认", "这意味着"
+- **Vague tool references**: say the specific name, not "AI工具" or "某个模型"
+- **Summary-shaped paragraphs**: if a paragraph could be the conclusion of any article on the topic, it says nothing — rewrite with specific details or cut it
+
+When in doubt: would a knowledgeable person actually say this in conversation, or does it only exist in AI output? If the latter, kill it.
+
+Before accepting Claude's edits, run `/write` on the refined draft to strip any remaining AI patterns.
 
 ## Phase 6: Self-Review and Publish
 
@@ -111,7 +153,16 @@ Read the entire article yourself, not with AI. Read it as your target reader wou
 
 Mark everything that feels off: unclear sentences, abrupt transitions, sections that drag. Fix them. Read again. Two full passes is the minimum.
 
-When it reads clean from start to finish: publish it.
+### Pre-Publish Checklist
+
+- [ ] Every core claim has a source. No claim is supported by a single source alone.
+- [ ] Every concept is explained before it is used.
+- [ ] No AI-flavor patterns survived from Phase 5.
+- [ ] A reader can go start to finish without needing to jump back.
+- [ ] Specific details and examples, not generic summaries, carry the argument.
+- [ ] Anything you could not verify is marked as uncertain, not stated as fact.
+
+When it reads clean from start to finish and the checklist is clear: publish it.
 
 One concern to set aside: "what if no one reads it." If the content has substance, readers will find it. That concern is not a reason to skip publishing. It is a reason to make sure the content has substance.
 
