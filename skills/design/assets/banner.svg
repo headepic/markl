@@ -54,7 +54,7 @@
     font-weight="900"
     fill="#FFFFFF"
     letter-spacing="-3"
-  >Claude Design</text>
+  >Design</text>
 
   <!-- Chinese subtitle -->
   <text
@@ -110,7 +110,7 @@
 
   <!-- ============================================================ -->
   <!-- RIGHT: MINI MOCKUP GRID (2×2)                                -->
-  <!-- Each mock represents one output form of claude-design        -->
+  <!-- Each mock represents one output form of design        -->
   <!-- Viewport right area: x 880-1160, y 90-330                    -->
   <!-- 2×2 grid, tile ≈ 128×104, gap 16                             -->
   <!-- ============================================================ -->

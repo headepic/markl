@@ -1,4 +1,4 @@
-# SFX Library · claude-design
+# SFX Library · design
 
 > 全部由 ElevenLabs Sound Generation API 生成，苹果发布会级音质。
 > 产品级 SFX 资产库，覆盖花叔动画/演示/产品 Demo 全场景。

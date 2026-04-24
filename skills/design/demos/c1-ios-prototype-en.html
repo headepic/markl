@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="zh-Hans">
+<html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>claude-design V2 · c1-ios-prototype · 中文版</title>
+<title>design V2 · c1-ios-prototype · EN</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@100;200;300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -286,12 +286,13 @@
     text-transform: uppercase;
   }
   .home-screen .title {
-    font-family: var(--serif-cn);
-    font-size: 40px;
-    font-weight: 500;
-    line-height: 1.15;
-    margin-top: 10px;
-    letter-spacing: -0.01em;
+    font-family: var(--serif-en);
+    font-size: 48px;
+    font-weight: 300;
+    line-height: 1.02;
+    margin-top: 14px;
+    letter-spacing: -0.035em;
+    font-style: italic;
   }
   .home-screen .time-big {
     margin-top: 50px;
@@ -467,10 +468,11 @@
   /* 5. Settings · 设置 · list */
   .settings-screen { padding: 40px 28px; color: var(--cd-ink); }
   .settings-screen .title-row {
-    font-family: var(--serif-cn);
-    font-size: 40px;
-    font-weight: 500;
-    letter-spacing: -0.01em;
+    font-family: var(--serif-en);
+    font-size: 48px;
+    font-weight: 300;
+    letter-spacing: -0.035em;
+    font-style: italic;
   }
   .settings-screen .list {
     margin-top: 40px;
@@ -617,11 +619,12 @@
   }
   .brand-cn {
     margin-top: 30px;
-    font-family: var(--serif-cn);
-    font-size: 18px;
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-size: 22px;
     font-weight: 300;
     color: var(--cd-dim);
-    letter-spacing: 0.4em;
+    letter-spacing: 0.12em;
     opacity: 0;
     will-change: opacity;
   }
@@ -642,7 +645,7 @@
       <div class="title">~/projects</div>
     </div>
     <div class="tty-body">
-      <div class="comment" id="comment" style="opacity:0">&gt; 说一句话，拿回一个能点的 App</div>
+      <div class="comment" id="comment" style="opacity:0">&gt; Type a sentence, get a clickable app.</div>
       <div style="margin-top:6px">
         <span class="prompt">$</span><span class="typed" id="typed"></span><span class="cursor" id="ttyCursor"></span>
       </div>
@@ -688,18 +691,18 @@
           <!-- 2. Home -->
           <div class="screen-view" id="view-home">
             <div class="home-screen">
-              <div class="kicker">POMODORO · 专注</div>
-              <div class="title">下一件要做的事</div>
+              <div class="kicker">POMODORO</div>
+              <div class="title">Next up.</div>
               <div class="time-big">25<span class="sep">:</span>00</div>
-              <div class="sub">写完这一节，休息 5 分钟</div>
-              <div class="cta">开始专注</div>
+              <div class="sub">Write one section. Rest five minutes.</div>
+              <div class="cta">Focus now</div>
             </div>
           </div>
 
           <!-- 3. Timer -->
           <div class="screen-view" id="view-timer">
             <div class="timer-screen">
-              <div class="phase">FOCUS · 第 1 轮</div>
+              <div class="phase">FOCUS · ROUND 1</div>
               <div class="ring-wrap">
                 <svg viewBox="0 0 320 320">
                   <circle class="bg-ring" cx="160" cy="160" r="140"/>
@@ -707,12 +710,12 @@
                 </svg>
                 <div class="ring-label">
                   <div class="rl-time" id="ringTime">24:12</div>
-                  <div class="rl-tag">剩余</div>
+                  <div class="rl-tag">REMAINING</div>
                 </div>
               </div>
               <div class="actions">
-                <div class="act-btn">暂停</div>
-                <div class="act-btn primary">跳过</div>
+                <div class="act-btn">Pause</div>
+                <div class="act-btn primary">Skip</div>
               </div>
             </div>
           </div>
@@ -720,9 +723,9 @@
           <!-- 4. Stats -->
           <div class="screen-view" id="view-stats">
             <div class="stats-screen">
-              <div class="stats-label">本周 · 统计</div>
-              <div class="stats-hero">23<span class="unit">轮</span></div>
-              <div class="stats-sub">比上周多出 5 轮</div>
+              <div class="stats-label">THIS WEEK</div>
+              <div class="stats-hero">23<span class="unit">rounds</span></div>
+              <div class="stats-sub">+5 from last week</div>
               <div class="chart" id="chart">
                 <div class="bar dim" style="height:30%"></div>
                 <div class="bar" style="height:52%"></div>
@@ -741,22 +744,22 @@
           <!-- 5. Settings -->
           <div class="screen-view" id="view-settings">
             <div class="settings-screen">
-              <div class="title-row">设置</div>
+              <div class="title-row">Settings</div>
               <div class="list">
                 <div class="row">
-                  <span class="k">专注时长</span>
+                  <span class="k">Focus length</span>
                   <span class="v">25 MIN</span>
                 </div>
                 <div class="row">
-                  <span class="k">白噪音</span>
+                  <span class="k">White noise</span>
                   <div class="toggle"></div>
                 </div>
                 <div class="row">
-                  <span class="k">提醒铃声</span>
+                  <span class="k">Ring alert</span>
                   <div class="toggle off"></div>
                 </div>
                 <div class="row">
-                  <span class="k">主题</span>
+                  <span class="k">Theme</span>
                   <span class="v">CLAUDE MIST</span>
                 </div>
               </div>
@@ -801,7 +804,7 @@
   <div class="brand-wall" id="brandWall">
     <div class="brand-wordmark" id="brandWord">huashu<span class="dot">·</span>design</div>
     <div class="brand-underline" id="brandLine"></div>
-    <div class="brand-cn" id="brandCn">说一句话 · 拿回一个 App</div>
+    <div class="brand-cn" id="brandCn">Say it. Get an app.</div>
   </div>
 
 </div>
@@ -855,7 +858,7 @@
   const brandCn = el('brandCn');
 
   // Typing text
-  const typeStr = 'make a pomodoro app';
+  const typeStr = 'make pomodoro app';
   function setTyping(progress) {
     const n = Math.floor(typeStr.length * progress);
     typed.textContent = typeStr.slice(0, n);

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<title>Claude Design · Here's to the Agents (v10)</title>
+<title>Design · Here's to the Agents (v10)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,300..700;1,8..60,300..700&family=Noto+Serif+SC:wght@300;400;500;600&family=Inter:wght@100;200;300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -18,7 +18,7 @@
     --accent: #D97757;          /* terracotta — 致敬 Anthropic 血统 */
     --accent-deep: #B85D3D;
 
-    /* Claude Design palette — Act 0 专用 */
+    /* Design palette — Act 0 专用 */
     --cd-bg: #F5F4F0;
     --cd-panel: #FFFFFF;
     --cd-ink: #1A1918;
@@ -388,7 +388,7 @@
   }
   .watermark.visible { opacity: 1; }
 
-  /* ============ Act 0 — Claude Design 致敬（+讽刺） ============ */
+  /* ============ Act 0 — Design 致敬（+讽刺） ============ */
   .act0 {
     background: #0a0a0a;
   }
@@ -760,9 +760,9 @@
 
 <div class="stage" id="stage">
 
-  <div class="watermark" id="watermark">Created by Claude-Design</div>
+  <div class="watermark" id="watermark">Created by Design</div>
 
-  <!-- ========== Act 0: Claude Design 致敬 ========== -->
+  <!-- ========== Act 0: Design 致敬 ========== -->
   <div class="scene act0" id="act0ClaudeDesign">
     <div class="cd-browser" id="cdBrowser">
       <!-- Chrome bar -->
@@ -941,7 +941,7 @@
     <div class="brand-wordmark" id="wordmark">huashu<span class="accent">-</span>design</div>
     <div class="farewell-quote" id="farewell">For them, we built this.</div>
     <div class="farewell-cn" id="farewellCn">· 为 他 们 · 我 们 造 了 这 个 ·</div>
-    <div class="brand-url" id="url">huasheng.ai/claude-design-hero</div>
+    <div class="brand-url" id="url">huasheng.ai/design-hero</div>
   </div>
 
 </div>
@@ -1013,7 +1013,7 @@
   const T = {
     DURATION: 30.0,
 
-    // ===== Act 0: Claude Design 致敬 (0 - 4s) =====
+    // ===== Act 0: Design 致敬 (0 - 4s) =====
     a0_in:   [0.3, 1.2],       // browser fade + scale in
     a0_hold: [1.2, 3.4],       // tweaks 自动动
     a0_out:  [3.4, 4.0],       // browser 退场
@@ -1116,7 +1116,7 @@
   const urlEl = document.getElementById('url');
   const watermark = document.getElementById('watermark');
 
-  const COMMAND = '/claude-design 做一份发布会PPT';
+  const COMMAND = '/design 做一份发布会PPT';
 
   // ---------- Gallery transforms ----------
   const GALLERY_TILT = 'perspective(2400px) rotateX(14deg) rotateY(-10deg) rotateZ(-2deg)';
@@ -1140,7 +1140,7 @@
 
   // ---------- Render ----------
   function render(t) {
-    // ============ Act 0: Claude Design 致敬 ============
+    // ============ Act 0: Design 致敬 ============
     if (t < T.a0_out[1]) {
       let op;
       if (t < T.a0_in[1]) op = lerp(t, T.a0_in[0], T.a0_in[1], 0, 1, expoOut);

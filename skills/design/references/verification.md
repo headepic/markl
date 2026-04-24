@@ -21,7 +21,7 @@ open -a "Google Chrome" "/path/to/your/design.html"
 HTML文件里最常见的问题是JS报错导致白屏。用Playwright跑一遍：
 
 ```bash
-python ~/.claude/skills/claude-design/scripts/verify.py path/to/design.html
+python ~/.claude/skills/design/scripts/verify.py path/to/design.html
 ```
 
 这个脚本会：

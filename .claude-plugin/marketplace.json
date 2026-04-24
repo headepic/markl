@@ -5,14 +5,14 @@
     "url": "https://github.com/headepic/markl"
   },
   "metadata": {
-    "description": "Personal skill collection for Claude Code: 14 skills covering the engineering workflow.",
+    "description": "Personal skill collection for Claude Code: 15 skills covering the engineering workflow.",
     "version": "1.0.0"
   },
   "plugins": [
     {
       "name": "markl",
       "source": "./",
-      "description": "auto-harness orchestrator plus think, hunt, design, check, learn, read, write, health, evolve-skills, llm-wiki, repo-analyzer, dspy, claude-design. Includes a PostToolUse hook that records skill invocations and .markl/ artifact events.",
+      "description": "auto-harness orchestrator plus think, hunt, design, check, learn, read, write, health, evolve-skills, llm-wiki, repo-analyzer, dspy, frontend-design. Includes a PostToolUse hook that records skill invocations and .markl/ artifact events.",
       "version": "1.0.0",
       "category": "development",
       "homepage": "https://github.com/headepic/markl",
