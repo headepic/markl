@@ -1,0 +1,4 @@
+interface:
+  display_name: "Domain Research"
+  short_description: "Systematic domain research briefs with evidence and synthesis."
+  default_prompt: "Research a domain, technology, company, product, market, or knowledge area and produce a structured brief with sources, evidence, open questions, and recommendations."
